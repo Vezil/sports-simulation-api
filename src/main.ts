@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api');
@@ -18,9 +18,11 @@ async function bootstrap() {
 
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  await app.listen(3000);
+  const port = process.env.API_PORT ? Number(process.env.API_PORT) : 3000;
+  await app.listen(port);
 }
 
-bootstrap()
-  .then()
-  .catch((error) => {});
+bootstrap().catch((error: unknown) => {
+  console.error('Application failed to start', error);
+  process.exit(1);
+});

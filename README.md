@@ -223,6 +223,12 @@ http://localhost:3000
 
 ---
 
+## Environment Variables
+
+The application supports the following optional environment variables:
+
+- `API_PORT` – port on which the server will run (default: 3000)
+
 ## 📌 Design Decisions
 
 ### Value Object for Simulation Name
