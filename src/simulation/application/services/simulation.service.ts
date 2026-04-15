@@ -1,14 +1,19 @@
+import { Inject, Injectable } from '@nestjs/common';
 import { SimulationEntity } from '../../domain/entities/simulation.entity';
 import { SimulationNameVO } from '../../domain/value-objects/simulation-name.vo';
 import { SimulationScheduler } from './simulation-scheduler.service';
-import { RandomGeneratorPort } from '../ports/random-generator.port';
+import { RANDOM_GENERATOR_PORT, RandomGeneratorPort } from '../ports/random-generator.port';
+import { SimulationGateway } from '../../interface/websocket/simulation.gateway';
 
+@Injectable()
 export class SimulationService {
   private readonly simulation = new SimulationEntity();
 
   constructor(
+    @Inject(RANDOM_GENERATOR_PORT)
     private readonly random: RandomGeneratorPort,
     private readonly scheduler: SimulationScheduler,
+    private readonly gateway: SimulationGateway,
   ) {}
 
   start(name: string): void {
@@ -16,6 +21,7 @@ export class SimulationService {
     const nameVO = SimulationNameVO.create(name);
 
     this.simulation.start(nameVO, now);
+    this.gateway.emitSimulationStarted(this.simulation.toSnapshot());
 
     this.scheduler.start(
       () => this.handleTick(),
@@ -30,12 +36,14 @@ export class SimulationService {
 
     this.simulation.finish(now);
     this.scheduler.stop();
+    this.gateway.emitSimulationFinished(this.simulation.toSnapshot());
   }
 
   restart(): void {
     const now = new Date();
 
     this.simulation.restart(now);
+    this.gateway.emitSimulationRestarted(this.simulation.toSnapshot());
 
     this.scheduler.start(
       () => this.handleTick(),
@@ -45,19 +53,17 @@ export class SimulationService {
     );
   }
 
-  getState() {
+  getState(): ReturnType<SimulationEntity['toSnapshot']> {
     return this.simulation.toSnapshot();
   }
 
   private handleTick(): void {
     const teams = this.simulation.getAllTeams();
-
     const index = this.random.nextInt(teams.length);
     const selectedTeam = teams[index];
 
     this.simulation.awardGoalTo(selectedTeam);
-
-    // TODO: WebSocket event
+    this.gateway.emitSimulationScoreUpdated(this.simulation.toSnapshot());
   }
 
   private handleAutoFinish(): void {
@@ -65,10 +71,9 @@ export class SimulationService {
 
     try {
       this.simulation.finish(now);
+      this.gateway.emitSimulationFinished(this.simulation.toSnapshot());
     } catch {
-      // TODO: catch
+      // simulation was already finished manually
     }
-
-    // TODO: event WebSocket
   }
 }

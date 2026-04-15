@@ -4,20 +4,17 @@ import { SimulationScheduler } from './application/services/simulation-scheduler
 import { MathRandomGenerator } from './infrastructure/random/math-random.generator';
 import { RANDOM_GENERATOR_PORT } from './application/ports/random-generator.port';
 import { SimulationController } from './interface/http/controllers/simulation.controller';
+import { SimulationGateway } from './interface/websocket/simulation.gateway';
 
 @Module({
   controllers: [SimulationController],
   providers: [
+    SimulationGateway,
     SimulationScheduler,
+    SimulationService,
     {
       provide: RANDOM_GENERATOR_PORT,
       useClass: MathRandomGenerator,
-    },
-    {
-      provide: SimulationService,
-      useFactory: (random: MathRandomGenerator, scheduler: SimulationScheduler) =>
-        new SimulationService(random, scheduler),
-      inject: [RANDOM_GENERATOR_PORT, SimulationScheduler],
     },
   ],
   exports: [SimulationService],
