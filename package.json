@@ -11,6 +11,7 @@
     "start:debug": "nest start --debug --watch",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:e2e": "jest --config ./test/jest-e2e.json",
     "test:cov": "jest --coverage"
   },
   "dependencies": {
