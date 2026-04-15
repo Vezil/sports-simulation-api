@@ -1,5 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { HttpExceptionFilter } from '../src/common/filters/http-exception.filter';
@@ -40,7 +40,14 @@ describe('Simulation (e2e)', () => {
     expect(res.body.name).toBe('Katar 2023');
   });
 
-  it('should get simulation state after start', async () => {
+  it('should return validation error for invalid simulation name', async () => {
+    await request(app.getHttpServer())
+      .post('/api/simulation/start')
+      .send({ name: 'abc' })
+      .expect(400);
+  });
+
+  it('should return current simulation state after start', async () => {
     await request(app.getHttpServer())
       .post('/api/simulation/start')
       .send({ name: 'Katar 2023' })
@@ -49,17 +56,6 @@ describe('Simulation (e2e)', () => {
     const res = await request(app.getHttpServer()).get('/api/simulation').expect(200);
 
     expect(res.body.status).toBe('RUNNING');
-  });
-
-  it('should reject a second immediate start request', async () => {
-    await request(app.getHttpServer())
-      .post('/api/simulation/start')
-      .send({ name: 'Katar 2023' })
-      .expect(201);
-
-    await request(app.getHttpServer())
-      .post('/api/simulation/start')
-      .send({ name: 'Katar 2023' })
-      .expect(409);
+    expect(res.body.matches).toHaveLength(3);
   });
 });

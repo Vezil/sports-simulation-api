@@ -1,11 +1,17 @@
 import { SimulationScheduler } from './simulation-scheduler.service';
 
-jest.useFakeTimers();
-
 describe('SimulationScheduler', () => {
-  it('should call onTick 9 times and then onFinish', () => {
-    const scheduler = new SimulationScheduler();
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
 
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
+
+  it('should call onTick 9 times and then onFinish once', () => {
+    const scheduler = new SimulationScheduler();
     const onTick = jest.fn();
     const onFinish = jest.fn();
 
@@ -17,16 +23,17 @@ describe('SimulationScheduler', () => {
     expect(onFinish).toHaveBeenCalledTimes(1);
   });
 
-  it('should stop scheduler', () => {
+  it('should stop scheduler and prevent future ticks', () => {
     const scheduler = new SimulationScheduler();
-
     const onTick = jest.fn();
+    const onFinish = jest.fn();
 
-    scheduler.start(onTick, jest.fn(), 9, 1000);
+    scheduler.start(onTick, onFinish, 9, 1000);
     scheduler.stop();
 
     jest.advanceTimersByTime(9000);
 
-    expect(onTick).toHaveBeenCalledTimes(0);
+    expect(onTick).not.toHaveBeenCalled();
+    expect(onFinish).not.toHaveBeenCalled();
   });
 });
