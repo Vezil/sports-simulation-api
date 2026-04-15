@@ -3,8 +3,10 @@ import { SimulationService } from './application/services/simulation.service';
 import { SimulationScheduler } from './application/services/simulation-scheduler.service';
 import { MathRandomGenerator } from './infrastructure/random/math-random.generator';
 import { RANDOM_GENERATOR_PORT } from './application/ports/random-generator.port';
+import { SimulationController } from './interface/http/controllers/simulation.controller';
 
 @Module({
+  controllers: [SimulationController],
   providers: [
     SimulationScheduler,
     {

@@ -1,7 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { SimulationService } from './simulation/application/services/simulation.service';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,13 +16,7 @@ async function bootstrap() {
     }),
   );
 
-  // const simulationService = app.get(SimulationService);
-  //
-  // simulationService.start('Katar 2023');
-  //
-  // setTimeout(() => {
-  //   console.log(simulationService.getState());
-  // }, 5000);
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   await app.listen(3000);
 }
