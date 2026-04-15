@@ -5,6 +5,7 @@ import { SimulationNotFinishedError } from '../errors/simulation-not-finished.er
 import { SimulationNotRunningError } from '../errors/simulation-not-running.error';
 import { SimulationStartThrottledError } from '../errors/simulation-start-throttled.error';
 import { SimulationNameVO } from '../value-objects/simulation-name.vo';
+import { SimulationSnapshot } from '../interfaces/simulation-snapshot.interface';
 
 export class SimulationEntity {
   private static readonly START_THROTTLE_MS = 5000;
@@ -108,7 +109,7 @@ export class SimulationEntity {
     return this._matches.flatMap((match) => [match.homeTeam, match.awayTeam]);
   }
 
-  toSnapshot() {
+  toSnapshot(): SimulationSnapshot {
     return {
       name: this._name,
       status: this._status,
