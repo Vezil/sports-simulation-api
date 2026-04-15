@@ -2,6 +2,7 @@ import { SimulationService } from './simulation.service';
 import { SimulationScheduler } from './simulation-scheduler.service';
 import { RandomGeneratorPort } from '../ports/random-generator.port';
 import { SimulationGateway } from '../../interface/websocket/simulation.gateway';
+import { SimulationStatus } from '../../domain/enums/simulation-status.enum';
 
 class FakeRandomGenerator implements RandomGeneratorPort {
   constructor(private readonly values: number[] = [0]) {}
@@ -49,7 +50,7 @@ describe('SimulationService', () => {
     expect(scheduler.start).toHaveBeenCalledTimes(1);
 
     const state = service.getState();
-    expect(state.status).toBe('RUNNING');
+    expect(state.status).toBe(SimulationStatus.RUNNING);
     expect(state.name).toBe('Katar 2023');
     expect(state.totalGoals).toBe(0);
   });
@@ -86,7 +87,7 @@ describe('SimulationService', () => {
     expect(scheduler.start).toHaveBeenCalledTimes(2);
 
     const state = service.getState();
-    expect(state.status).toBe('RUNNING');
+    expect(state.status).toBe(SimulationStatus.RUNNING);
     expect(state.tick).toBe(0);
     expect(state.totalGoals).toBe(0);
 

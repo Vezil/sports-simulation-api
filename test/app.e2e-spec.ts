@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { HttpExceptionFilter } from '../src/common/filters/http-exception.filter';
+import { SimulationStatus } from '../src/simulation/domain/enums/simulation-status.enum';
 
 describe('Simulation (e2e)', () => {
   let app: INestApplication;
@@ -36,7 +37,7 @@ describe('Simulation (e2e)', () => {
       .send({ name: 'Katar 2023' })
       .expect(201);
 
-    expect(res.body.status).toBe('RUNNING');
+    expect(res.body.status).toBe(SimulationStatus.RUNNING);
     expect(res.body.name).toBe('Katar 2023');
   });
 
@@ -55,7 +56,7 @@ describe('Simulation (e2e)', () => {
 
     const res = await request(app.getHttpServer()).get('/api/simulation').expect(200);
 
-    expect(res.body.status).toBe('RUNNING');
+    expect(res.body.status).toBe(SimulationStatus.RUNNING);
     expect(res.body.matches).toHaveLength(3);
   });
 });
