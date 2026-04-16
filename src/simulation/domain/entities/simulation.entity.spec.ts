@@ -1,45 +1,46 @@
 import { SimulationEntity } from './simulation.entity';
 import { SimulationNameVO } from '../value-objects/simulation-name.vo';
+import { SimulationStatus } from '../enums/simulation-status.enum';
 
 describe('SimulationEntity', () => {
   it('should start simulation', () => {
-    const sim = new SimulationEntity();
+    const simulation = new SimulationEntity();
     const now = new Date();
 
-    sim.start(SimulationNameVO.create('Katar 2023'), now);
+    simulation.start(SimulationNameVO.create('Katar 2023'), now);
 
-    expect(sim.status).toBe('RUNNING');
-    expect(sim.tick).toBe(0);
+    expect(simulation.status).toBe(SimulationStatus.RUNNING);
+    expect(simulation.tick).toBe(0);
   });
 
   it('should not allow start when already running', () => {
-    const sim = new SimulationEntity();
+    const simulation = new SimulationEntity();
     const now = new Date();
 
-    sim.start(SimulationNameVO.create('Katar 2023'), now);
+    simulation.start(SimulationNameVO.create('Katar 2023'), now);
 
-    expect(() => sim.start(SimulationNameVO.create('Katar 2023'), now)).toThrow();
+    expect(() => simulation.start(SimulationNameVO.create('Katar 2023'), now)).toThrow();
   });
 
   it('should increment score and tick', () => {
-    const sim = new SimulationEntity();
+    const simulation = new SimulationEntity();
     const now = new Date();
 
-    sim.start(SimulationNameVO.create('Katar 2023'), now);
+    simulation.start(SimulationNameVO.create('Katar 2023'), now);
 
-    sim.awardGoalTo('Germany');
+    simulation.awardGoalTo('Germany');
 
-    expect(sim.tick).toBe(1);
-    expect(sim.totalGoals).toBe(1);
+    expect(simulation.tick).toBe(1);
+    expect(simulation.totalGoals).toBe(1);
   });
 
   it('should finish simulation', () => {
-    const sim = new SimulationEntity();
+    const simulation = new SimulationEntity();
     const now = new Date();
 
-    sim.start(SimulationNameVO.create('Katar 2023'), now);
-    sim.finish(now);
+    simulation.start(SimulationNameVO.create('Katar 2023'), now);
+    simulation.finish(now);
 
-    expect(sim.status).toBe('FINISHED');
+    expect(simulation.status).toBe(SimulationStatus.FINISHED);
   });
 });

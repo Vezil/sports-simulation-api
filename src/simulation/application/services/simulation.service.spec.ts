@@ -66,7 +66,7 @@ describe('SimulationService', () => {
     expect(gateway.emitSimulationFinished).toHaveBeenCalledTimes(1);
 
     const state = service.getState();
-    expect(state.status).toBe('FINISHED');
+    expect(state.status).toBe(SimulationStatus.FINISHED);
   });
 
   it('should restart finished simulation after throttle window, emit restarted event and schedule again', () => {
@@ -128,7 +128,7 @@ describe('SimulationService', () => {
     expect(gateway.emitSimulationFinished).toHaveBeenCalledTimes(1);
 
     const state = service.getState();
-    expect(state.status).toBe('FINISHED');
+    expect(state.status).toBe(SimulationStatus.FINISHED);
   });
 
   it('should not emit finished event twice when auto-finish happens after manual finish', () => {

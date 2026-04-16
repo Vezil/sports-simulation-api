@@ -4,6 +4,7 @@ import { SimulationNameVO } from '../../domain/value-objects/simulation-name.vo'
 import { SimulationScheduler } from './simulation-scheduler.service';
 import { RANDOM_GENERATOR_PORT, RandomGeneratorPort } from '../ports/random-generator.port';
 import { SimulationGateway } from '../../interface/websocket/simulation.gateway';
+import { SimulationNotRunningError } from '../../domain/errors/simulation-not-running.error';
 
 @Injectable()
 export class SimulationService {
@@ -72,8 +73,11 @@ export class SimulationService {
     try {
       this.simulation.finish(now);
       this.gateway.emitSimulationFinished(this.simulation.toSnapshot());
-    } catch {
-      // simulation was already finished manually
+    } catch (error) {
+      if (!(error instanceof SimulationNotRunningError)) {
+        throw error;
+      }
+      // Simulation already finished manually — safe to ignore
     }
   }
 }
